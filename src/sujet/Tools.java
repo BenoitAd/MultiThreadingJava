@@ -21,13 +21,9 @@ import org.jsoup.nodes.Element;
  * @author Matthieu Perrin
  */
 public final class Tools {
-
-	private static boolean completed = false; // true when all the page are parsed
-	private static int aliveThreads = 0; // number of threads currently alive
 	private static Pattern matchPattern = null;
 	private static int nbThreads = 100;
-	private static List<CustomNode> startingURL = Collections.synchronizedList(new ArrayList<>());
-	private static List<CustomNode> historiqueURL = Collections.synchronizedList(new ArrayList<>());
+	private static FileBLoquante startingURL = new FileBLoquante();
 	private static boolean quiet = false;               // -q --quiet
 	private static boolean count = false;               // -c --count
 	private static boolean noFilename = false;          // -h --no-filename
@@ -35,39 +31,6 @@ public final class Tools {
 	private static boolean onlyMatching = false;        // -o --only-matching
 	private static boolean initialTab = false;          // -T --initial-tab
 	private static boolean offline = false;             // -O --offline
-
-	public static boolean isCompleted() {
-		return completed;
-	}
-
-	public static void setCompleted(boolean completed) {
-		Tools.completed = completed;
-	}
-	public static synchronized int getAliveThreads() {
-		return aliveThreads;
-	}
-
-	public static synchronized void setAliveThreads(int nbThreads) {
-		aliveThreads = nbThreads;
-	}
-
-
-	public static synchronized void addNotParsedUrl(CustomNode url){
-		startingURL.add(url);
-	}
-
-	public static synchronized void removeParsedUrl(CustomNode url){
-		startingURL.remove(startingURL().indexOf(url));
-		historiqueURL.add(url);
-	}
-
-	public static synchronized List<CustomNode> getHistoriqueURL(){
-		return historiqueURL;
-	}
-
-	public static synchronized boolean isUrlInHistorique(CustomNode url){
-		return historiqueURL.contains(url);
-	}
 
 	/**
 	 * Sets the regular expression for which matching expressions will be searched on the Web
@@ -100,7 +63,7 @@ public final class Tools {
 	 * These URLs are typically found in the options used to initialize the program
 	 * @return The list of URL seeds
 	 */
-	public static List<CustomNode> startingURL () {
+	public static FileBLoquante startingURL () {
 		return startingURL;
 	}
 
@@ -109,7 +72,7 @@ public final class Tools {
 	 * Tools.initialize("--help") outputs the list of possible options
 	 * @param args An array of arguments, as obtained in the main() method
 	 */
-	public static void initialize(String[] args) {
+	public static void initialize(String[] args) throws InterruptedException {
 		for(String input : args) {
 			if (input.charAt(0) == '-') {
 				if ((input.charAt(1) != '-' && input.contains("c")) || input.equals("--count"))
@@ -149,7 +112,7 @@ public final class Tools {
 			else if (matchPattern == null) {
 				setRegularExpression(input);
 			} else {
-				startingURL.add( new CustomNode(input));
+				startingURL.put(new CustomNode(input));
 			}
 		}
 	}
@@ -159,7 +122,7 @@ public final class Tools {
 	 * Tools.initialize("--help") outputs the list of possible options
 	 * @param args A string containing a list of arguments separated by spaces
 	 */
-	public static void initialize(String args) {
+	public static void initialize(String args) throws InterruptedException {
 		initialize(args.split(" "));
 	}
 
