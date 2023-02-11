@@ -6,32 +6,29 @@ import java.util.List;
 
 public class WebGrep extends Thread {
 
-	Integer nodeIndex;
 	CustomNode url;
 
 
 	public WebGrep() {
 		Tools.setAliveThreads(Tools.getAliveThreads() + 1);
 		System.out.println("thread number : " + Tools.getAliveThreads() + " alive");
-		nodeIndex = Tools.startingURL().size() - 1;
-		// current url of the thread to parse
-		url = Tools.startingURL().get(nodeIndex);
+		// current url of the thread to parse, first in the list
+		url = Tools.startingURL().get(0);
 	}
 
 	@Override
 	public void run() {
-		if (nodeIndex != null && nodeIndex >= 0 && url != null) {
+		if (url != null) {
 			// Parse the page to obtain the matching expressions and the hyperlinks
 			Tools.ParsedPage p = null;
 			try {
 				p = Tools.parsePage(url.linkToParse);
+				// remove the url from the list of urls to parse and add it to the historique list
+				Tools.removeParsedUrl(url);
+				System.out.println("page parsed : " + Tools.getHistoriqueURL().size());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-
-			// remove the url from the list of urls to parse and add it to the historique list
-			Tools.removeParsedUrl(url);
-			System.out.println("page parsed : " + Tools.getHistoriqueURL().size());
 
 			// Check if matches were found
 			if (!p.matches().isEmpty()) {
@@ -63,7 +60,6 @@ public class WebGrep extends Thread {
 			// if there are still urls to parse we create a new thread
 			if (Tools.startingURL().size() > 0) new WebGrep().start();
 		}
-
 
 		Tools.setAliveThreads(Tools.getAliveThreads() - 1);
 	}

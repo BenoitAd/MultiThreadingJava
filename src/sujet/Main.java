@@ -11,11 +11,9 @@ public class Main {
 
         System.out.println(Tools.numberThreads() + " threads can run with this configuration.");
         if ( Tools.startingURL().size() >  0 ){
-            if (Tools.getAliveThreads() < Tools.numberThreads()) {
-                // iterate the number of threads alive
-                WebGrep webGrep = new WebGrep();
-                webGrep.start();
-            }
+            // iterate the number of threads alive
+            new WebGrep().start();
+
         }
 
     }
