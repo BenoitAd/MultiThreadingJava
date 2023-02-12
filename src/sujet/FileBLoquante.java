@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class FileBLoquante extends LinkedBlockingQueue<CustomNode> {
+public class FileBloquante extends LinkedBlockingQueue<CustomNode> {
 
     private Set<CustomNode> set = Collections.newSetFromMap(new ConcurrentHashMap<>());
 

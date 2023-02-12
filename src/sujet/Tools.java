@@ -1,16 +1,16 @@
 package sujet;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Contains the tools necessary to 
@@ -23,7 +23,7 @@ import org.jsoup.nodes.Element;
 public final class Tools {
 	private static Pattern matchPattern = null;
 	private static int nbThreads = 100;
-	private static FileBLoquante startingURL = new FileBLoquante();
+	private static FileBloquante startingURL = new FileBloquante();
 	private static boolean quiet = false;               // -q --quiet
 	private static boolean count = false;               // -c --count
 	private static boolean noFilename = false;          // -h --no-filename
@@ -63,7 +63,7 @@ public final class Tools {
 	 * These URLs are typically found in the options used to initialize the program
 	 * @return The list of URL seeds
 	 */
-	public static FileBLoquante startingURL () {
+	public static FileBloquante startingURL () {
 		return startingURL;
 	}
 
