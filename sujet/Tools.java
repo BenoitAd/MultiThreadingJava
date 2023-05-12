@@ -1,16 +1,14 @@
 package sujet;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /**
  * Contains the tools necessary to 
@@ -21,9 +19,10 @@ import java.util.regex.Pattern;
  * @author Matthieu Perrin
  */
 public final class Tools {
+
 	private static Pattern matchPattern = null;
 	private static int nbThreads = 100;
-	private static FileBloquante startingURL = new FileBloquante();
+	private static List<String> startingURL = new LinkedList<String>();
 	private static boolean quiet = false;               // -q --quiet
 	private static boolean count = false;               // -c --count
 	private static boolean noFilename = false;          // -h --no-filename
@@ -63,7 +62,7 @@ public final class Tools {
 	 * These URLs are typically found in the options used to initialize the program
 	 * @return The list of URL seeds
 	 */
-	public static FileBloquante startingURL () {
+	public static List<String> startingURL () {
 		return startingURL;
 	}
 
@@ -72,7 +71,7 @@ public final class Tools {
 	 * Tools.initialize("--help") outputs the list of possible options
 	 * @param args An array of arguments, as obtained in the main() method
 	 */
-	public static void initialize(String[] args) throws InterruptedException {
+	public static void initialize(String[] args) {
 		for(String input : args) {
 			if (input.charAt(0) == '-') {
 				if ((input.charAt(1) != '-' && input.contains("c")) || input.equals("--count"))
@@ -112,7 +111,7 @@ public final class Tools {
 			else if (matchPattern == null) {
 				setRegularExpression(input);
 			} else {
-				startingURL.put(new CustomNode(input));
+				startingURL.add(input);
 			}
 		}
 	}
@@ -122,7 +121,7 @@ public final class Tools {
 	 * Tools.initialize("--help") outputs the list of possible options
 	 * @param args A string containing a list of arguments separated by spaces
 	 */
-	public static void initialize(String args) throws InterruptedException {
+	public static void initialize(String args) {
 		initialize(args.split(" "));
 	}
 
@@ -157,8 +156,10 @@ public final class Tools {
 	public static ParsedPage parsePage(final String address) throws IOException {
 		Document doc;
 		if(offline) {
-			File input = new File(address);
-		    doc = Jsoup.parse(input, "UTF-8", address);
+			String addr = address.replace("https://", "OfflineWeb/https_/");
+			// System.out.println("address " + addr);
+			File input = new File(addr);
+		    doc = Jsoup.parse(input, "UTF-8", addr);
 		} else {
 			doc = Jsoup.connect(address).get();
 		}
@@ -183,7 +184,7 @@ public final class Tools {
 	 * Outputs the matches found in the given Web page, according to the options passed at initialization
 	 * @param p Parsed page obtained as the result of Tools.parsePage(address);
 	 */
-	public synchronized static void print(ParsedPage p) {
+	public static void print(ParsedPage p) {
 		if(!quiet && !p.matches().isEmpty()) {
 			// Print the header with address and count
 			if(!noFilename && count)
